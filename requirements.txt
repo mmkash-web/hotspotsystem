@@ -3,4 +3,3 @@ Flask-Cors
 Flask-SQLAlchemy
 routeros-api
 python-3.12.0
-pip freeze > requirements.txt
