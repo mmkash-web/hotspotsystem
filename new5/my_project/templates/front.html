@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy Data & Connect - EMMKASH TECH</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden; /* Prevent horizontal scrolling */
+        }
+        header {
+            width: 100%;
+            background-color: #0073e6;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+        }
+        header p {
+            margin: 5px 0 0;
+        }
+        h2 {
+            color: #333;
+            margin-top: 20px;
+        }
+        .important-message {
+            font-size: 16px; /* Smaller font size */
+            color: #0073e6;
+            text-align: center;
+            margin: 20px 0; /* Add some margin for spacing */
+        }
+        .card-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .card {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+        }
+        .card h3 {
+            margin: 0;
+            color: #0073e6;
+            font-size: 24px;
+        }
+        .card p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 400px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        label, input, button {
+            display: block;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        input, button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #0073e6;
+            color: #fff;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #005bb5;
+        }
+        .quotes {
+            margin-top: 40px;
+            width: 80%;
+            text-align: center;
+        }
+        .quotes h3 {
+            color: #0073e6;
+        }
+        .quote-slide {
+            display: none;
+            font-style: italic;
+            font-family: 'Georgia', serif;
+            color: #333;
+        }
+        footer {
+            margin-top: 40px;
+            padding: 20px 0;
+            width: 100%;
+            background-color: #0073e6;
+            color: white;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>EMMKASH TECH</h1>
+        <p>Contact us for support: +254112735877</p>
+    </header>
+
+    <div class="important-message">
+        <p>Thanks for choosing us! Please choose your desired package and enter your phone number.</p>
+    </div>
+    <h2>GET CONNECTED NOW</h2>
+
+    <div class="card-container">
+        <div class="card" data-value="5" data-profile="2 HOURS">
+            <h3>Ksh 5</h3>
+            <p>2 HOURS</p>
+        </div>
+        <div class="card" data-value="15" data-profile="12 HOURS">
+            <h3>Ksh 15</h3>
+            <p>12 HOURS</p>
+        </div>
+        <div class="card" data-value="20" data-profile="24 HOURS">
+            <h3>Ksh 20</h3>
+            <p>24 HOURS</p>
+        </div>
+        <div class="card" data-value="50" data-profile="4 DAYS">
+            <h3>Ksh 50</h3>
+            <p>4 DAYS</p>
+        </div>
+        <div class="card" data-value="100" data-profile="8 DAYS">
+            <h3>Ksh 100</h3>
+            <p>8 DAYS</p>
+        </div>
+        <div class="card" data-value="300" data-profile="1 MONTH">
+            <h3>Ksh 300</h3>
+            <p>1 MONTH</p>
+        </div>
+    </div>
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <form id="paymentForm">
+                <input type="hidden" id="package" required>
+                <input type="hidden" id="profile" required>
+                
+                <label for="phone">Enter Mpesa Number:</label>
+                <input type="text" id="phone" name="phone" placeholder="07 OR 01" required>
+
+                <input type="hidden" id="macAddress" value="{{ mac }}">
+                <input type="hidden" id="ipAddress" value="{{ ip }}">
+
+                <button type="submit">Pay Now</button>
+            </form>
+        </div>
+    </div>
+
+    <p id="message"></p>
+
+    <div class="quotes">
+        <h3>Random Quotes</h3>
+        <div class="quote-slide">"Technology is best when it brings people together." – Matt Mullenweg</div>
+        <div class="quote-slide">"It's not that we use technology, we live technology." – Godfrey Reggio</div>
+        <div class="quote-slide">"The real problem is not whether machines think but whether men do." – B.F. Skinner</div>
+        <div class="quote-slide">"Technology is a useful servant but a dangerous master." – Christian Lous Lange</div>
+        <div class="quote-slide">"The art challenges the technology, and the technology inspires the art." – John Lasseter</div>
+        <div class="quote-slide">"The great myth of our times is that technology is communication." – Libby Larsen</div>
+        <div class="quote-slide">"Just because something doesn’t do what you planned it to do doesn’t mean it’s useless." – Thomas Edison</div>
+        <div class="quote-slide">"Once a new technology rolls over you, if you’re not part of the steamroller, you’re part of the road." – Stewart Brand</div>
+        <div class="quote-slide">"The technology you use impresses no one. The experience you create with it is everything." – Sean Gerety</div>
+        <div class="quote-slide">"Technology is a word that describes something that doesn’t work yet." – Douglas Adams</div>
+        <div class="quote-slide">"It’s not a faith in technology. It’s faith in people." – Steve Jobs</div>
+        <div class="quote-slide">"We are stuck with technology when what we really want is just stuff that works." – Douglas Adams</div>
+        <div class="quote-slide">"All this modern technology just makes people try to do everything at once." – Bill Watterson</div>
+        <div class="quote-slide">"Any sufficiently advanced technology is indistinguishable from magic." – Arthur C. Clarke</div>
+        <div class="quote-slide">"Technology is nothing. What’s important is that you have a faith in people." – Steve Jobs</div>
+        <div class="quote-slide">"The human spirit must prevail over technology." – Albert Einstein</div>
+        <div class="quote-slide">"The science of today is the technology of tomorrow." – Edward Teller</div>
+        <div class="quote-slide">"We’re changing the world with technology." – Bill Gates</div>
+        <div class="quote-slide">"Technology is the campfire around which we tell our stories." – Laurie Anderson</div>
+        <div class="quote-slide">"The most technologically efficient machine that man has ever invented is the book." – Northrop Frye</div>
+        <div class="quote-slide">"Technology made large populations possible; large populations now make technology indispensable." – Joseph Krutch</div>
+        <div class="quote-slide">"The art of life is a constant readjustment to our surroundings." – Kakuzo Okakura</div>
+        <div class="quote-slide">"The real danger is not that computers will begin to think like men, but that men will begin to think like computers." – Sydney J. Harris</div>
+        <div class="quote-slide">"Any sufficiently advanced technology is equivalent to magic." – Arthur C. Clarke</div>
+        <div class="quote-slide">"The great growling engine of change – technology." – Alvin Toffler</div>
+        <div class="quote-slide">"First we thought the PC was a calculator. Then we found out how to turn numbers into letters with ASCII – and we thought it was a typewriter. Then we discovered graphics, and we thought it was a television. With the World Wide Web, we’ve realized it’s a brochure." – Douglas Adams</div>
+        <div class="quote-slide">"The most important thing in the world is not the technology but the dream." – Mark Zuckerberg</div>
+        <div class="quote-slide">"The best way to predict the future is to invent it." – Alan Kay</div>
+        <div class="quote-slide">"Innovation is the outcome of a habit, not a random act." – Sukant Ratnakar</div>
+        <div class="quote-slide">"The real problem is not whether machines think but whether men do." – B.F. Skinner</div>
+        <div class="quote-slide">"Technology is a useful servant but a dangerous master." – Christian Lous Lange</div>
+        <div class="quote-slide">"It has become appallingly obvious that our technology has exceeded our humanity." – Albert Einstein</div>
+        <div class="quote-slide">"Technology is best when it brings people together." – Matt Mullenweg</div>
+        <div class="quote-slide">"In a few short decades, the Internet has gone from a technical wonder to a business must." – Bill Schrader</div>
+        <div class="quote-slide">"The real danger is not that computers will begin to think like men, but that men will begin to think like computers." – Sydney J. Harris</div>
+        <div class="quote-slide">"The science of today is the technology of tomorrow." – Edward Teller</div>
+        <div class="quote-slide">"We are stuck with technology when what we really want is just stuff that works." – Douglas Adams</div>
+        <div class="quote-slide">"Technology is a word that describes something that doesn’t work yet." – Douglas Adams</div>
+        <div class="quote-slide">"Just because something doesn’t do what you planned it to do doesn’t mean it’s useless." – Thomas Edison</div>
+        <div class="quote-slide">"The technology you use impresses no one. The experience you create with it is everything." – Sean Gerety</div>
+        <div class="quote-slide">"The art challenges the technology, and the technology inspires the art." – John Lasseter</div>
+        <div class="quote-slide">"The great myth of our times is that technology is communication." – Libby Larsen</div>
+        <div class="quote-slide">"Any sufficiently advanced technology is indistinguishable from magic." – Arthur C. Clarke</div>
+        <div class="quote-slide">"The human spirit must prevail over technology." – Albert Einstein</div>
+        <div class="quote-slide">"The best way to predict the future is to invent it." – Alan Kay</div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Emmkash Tech. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.card').forEach(card => card.style.borderColor = '#ddd');
+                this.style.borderColor = '#0073e6';
+                document.getElementById('package').value = this.getAttribute('data-value');
+                document.getElementById('profile').value = this.getAttribute('data-profile');
+                document.getElementById('myModal').style.display = 'block';
+            });
+        });
+
+        document.querySelector('.close').addEventListener('click', function() {
+            document.getElementById('myModal').style.display = 'none';
+        });
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('myModal')) {
+                document.getElementById('myModal').style.display = 'none';
+            }
+        }
+
+        let slideIndex = 0;
+        showSlides();
+
+        function showSlides() {
+            let i;
+            let slides = document.getElementsByClassName("quote-slide");
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";
+            }
+            slideIndex++;
+            if (slideIndex > slides.length) {slideIndex = 1}
+            slides[slideIndex-1].style.display = "block";
+            setTimeout(showSlides, 5000); // Change slide every 5 seconds
+        }
+    </script>
+
+    <script src="/static/getMac.js"></script>
+    <script src="/static/login.js"></script>
+
+</body>
+</html>

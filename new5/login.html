@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy Data & Connect - EMMKASH TECH</title>
+    <meta http-equiv="pragma" content="no-cache" />
+    <meta http-equiv="expires" content="-1" />
+    <meta content='width=device-width, user-scalable=no' name='viewport'/>
+    <link rel="stylesheet" href="login.css" media="screen">
+    <style>
+        body.login {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        .vertical-form {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 300px; /* Smaller max-width */
+            margin: 20px auto; /* Less margin */
+            text-align: center;
+        }
+
+        .vertical-form input[type="text"],
+        .vertical-form input[type="password"] {
+            width: calc(100% - 24px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .vertical-form input[type="submit"] {
+            width: 100%;
+            padding: 8px; /* Smaller padding */
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px; /* Smaller font size */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            position: relative; /* For neon effect */
+            z-index: 1; /* For neon effect */
+            overflow: hidden; /* For neon effect */
+        }
+
+        .vertical-form input[type="submit"]::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00ff00, #00ff00, #00ff00, #00ff00);
+            z-index: -1;
+            filter: blur(8px);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+            animation: neon-rotate 2s linear infinite; /* For rotating neon effect */
+        }
+
+        @keyframes neon-rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .vertical-form input[type="submit"]:hover::before {
+            opacity: 1;
+        }
+
+        .vertical-form button {
+            width: 100%;
+            padding: 12px; /* Larger padding */
+            background-color: #007bff;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 18px; /* Larger font size */
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 10px; /* Add margin to separate from login form */
+        }
+
+        .vertical-form button:hover {
+            background-color: #0056b3;
+        }
+
+        .footer {
+            margin-top: 20px;
+        }
+
+        .footer p {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+        }
+
+        .copyright {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .helpline {
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+<body class='login'>
+$(if chap-id)
+    <form name="sendin" action="$(link-login-only)" method="post">
+        <input type="hidden" name="username" />
+        <input type="hidden" name="password" />
+        <input type="hidden" name="dst" value="$(link-orig)" />
+        <input type="hidden" name="popup" value="true" />
+    </form>
+    
+    <script type="text/javascript" src="/md5.js"></script>
+    <script type="text/javascript">
+    function doLogin() {
+        document.sendin.username.value = document.login.username.value;
+        document.sendin.password.value = hexMD5('$(chap-id)' + document.login.password.value + '$(chap-challenge)');
+        document.sendin.submit();
+        return false;
+    }
+    </script>
+$(endif)
+
+<form class="vertical-form" name="login" action="$(link-login-only)" method="post" background="#A03472"
+    $(if chap-id) onSubmit="return doLogin()" $(endif)>
+    <input type="hidden" name="dst" value="$(link-orig)" />
+    <input type="hidden" name="popup" value="true" />
+    <legend>
+        <p style="font-size: 16px; font-weight: bold;">WELCOME TO EMMKASH TECH</p>
+        <p style="font-size: 14px;">Please click on available packages.</p>
+    </legend>
+    <button type="button" onclick="window.location.href='http://ec32-154-159-252-52.ngrok-free.app/login?ip=$(ip)&mac=$(mac)'">View Available Packages</button>
+    <input id="username" name="username" type="text" placeholder="Username" size="30" required />
+    <input id="password" autocomplete="off" name="password" type="password" placeholder="Password" size="30" required />
+    <input name="submit" type="submit" value="Log In" />
+    <div class='footer'>
+        <p>$(if trial == 'yes')Free trial available, <a href="$(link-login-only)?dst=$(link-orig-esc)&amp;username=T-$(mac-esc)">click here</a>.$(endif)</p>
+        <p>$(if error)<span class="error">$(error)</span>$(endif)</p>
+    </div>
+    <div class="helpline">
+        <p>Helpline: +254112735877</p>
+    </div>
+    <div class="copyright">
+        <p>&copy; 2025 Emmkash Tech. All rights reserved.</p>
+    </div>
+</form>
+
+<script type="text/javascript">
+document.login.username.focus();
+
+// Auto-fill the username and password fields if they are present in the URL
+const urlParams = new URLSearchParams(window.location.search);
+const username = urlParams.get('username');
+const password = urlParams.get('password');
+if (username && password) {
+    document.getElementById('username').value = username;
+    document.getElementById('password').value = password;
+}
+</script>
+</body>
+</html>
