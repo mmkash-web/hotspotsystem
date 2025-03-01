@@ -1,6 +1,0 @@
-Flask
-Flask-Cors
-Flask-SQLAlchemy
-Flask-Admin
-routeros-api
-payhero
