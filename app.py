@@ -12,7 +12,7 @@ app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Needed for session management
 CORS(app)  # Enable CORS for all routes
 
-ROUTER_IP = "192.168.88.1"
+ROUTER_IP = "154.159.252.52"
 USERNAME = "admin"
 PASSWORD = "A35QOGURSS"
 LOG_FILE = "user_logs.txt"
