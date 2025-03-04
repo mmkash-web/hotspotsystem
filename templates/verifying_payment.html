@@ -3,36 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifying Payment</title>
+    <title>Connecting to WiFi - Emmkash Tech</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
-        .loading {
-            font-size: 1.5em;
-            margin-top: 20px;
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #e3f2fd;
+            font-family: Arial, sans-serif;
+            text-align: center;
         }
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #000;
+        .loader-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #1e88e5;
+            border-top: 5px solid transparent;
             border-radius: 50%;
             animation: spin 1s linear infinite;
+            margin: 20px auto;
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+        .progress-text {
+            font-size: 18px;
+            margin-top: 10px;
+            color: #1565c0;
+        }
+        h2 {
+            color: #0d47a1;
+        }
     </style>
 </head>
 <body>
-    <h1>Verifying Payment</h1>
-    <p>Please wait while we verify your payment and connect you to WiFi...</p>
-    <div class="loading">
-        <div class="spinner"></div>
+    <div class="loader-container">
+        <h2>Connecting to WiFi...</h2>
+        <div class="loader"></div>
+        <p class="progress-text" id="statusText">Verifying Payment...</p>
     </div>
+
     <script>
-        setTimeout(function() {
-            window.location.href = "/show-credentials";
-        }, 10000); // Simulate verification and connection process
+        let statusText = document.getElementById("statusText");
+        let steps = ["Verifying Payment...", "Processing Request...", "Finalizing Connection...", "Connected! Redirecting..."];
+        let stepIndex = 0;
+
+        function updateStatus() {
+            if (stepIndex < steps.length) {
+                statusText.innerText = steps[stepIndex];
+                stepIndex++;
+                setTimeout(updateStatus, 2000);
+            } else {
+                window.location.href = "http://emmkashtech.online"; // Change to your WiFi landing page
+            }
+        }
+        setTimeout(updateStatus, 2000);
     </script>
 </body>
 </html>
