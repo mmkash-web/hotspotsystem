@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, redirect, url_for, session
+from flask import Flask, request, jsonify, render_template, redirect, url_for, session, abort
 from flask_cors import CORS
 import routeros_api
 import datetime
@@ -195,6 +195,10 @@ def pay():
     except Exception as e:
         log_error(e)
         return jsonify({"success": False, "message": "Internal server error"}), 500
+
+@app.route('/login-success.html')
+def block_login_success():
+    abort(404)
 
 if __name__ == '__main__':
     # Start a background thread to remove expired users periodically
