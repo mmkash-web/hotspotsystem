@@ -44,8 +44,8 @@ document.getElementById("paymentForm").addEventListener("submit", async function
         }
 
         if (result.success) {
-            // Open the login success page in a new tab/window
-            window.open('login-success.html', '_blank');
+            // Display a success message
+            document.getElementById("message").innerText = "Payment successful! You are now logged in.";
         } else {
             document.getElementById("message").innerText = "Payment failed! " + (result.message || "Try again.");
         }
