@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, redirect, url_for, session, abort
+from flask import Flask, request, jsonify, render_template, redirect, url_for, session
 from flask_cors import CORS
 import routeros_api
 import datetime
@@ -151,7 +151,11 @@ def login():
             file.write(log_entry)
         
         log_event(f"User logged: MAC {mac}, IP {ip}, Phone {phone}, Profile {profile}, Expiry Date {expiry_date}")
-        return "Login successful!"
+        return redirect(url_for('dashboard'))
+
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
 
 @app.route('/log-user', methods=['POST'])
 def log_user_request():
@@ -177,6 +181,72 @@ def log_user_request():
         log_error(e)
         return jsonify({"error": "Internal server error"}), 500
 
+@app.route('/payment-callback', methods=['POST'])
+def payment_callback():
+    try:
+        # Log the entire request to debug if the callback is being received
+        log_event(f"Payment callback received: {request.data}")
+
+        data = request.json
+        response_data = data.get("response", {})
+        phone = response_data.get("Phone")
+        status = response_data.get("Status")
+
+        log_event(f"Payment callback received: Phone {phone}, Status {status}")
+        log_event(f"Callback Data: {data}")
+
+        if status == "Success":
+            mac, ip, profile = find_user_by_phone(phone)
+            if mac and ip:
+                # Logout the old session
+                logout_mikrotik_user(mac)
+
+                # Generate a random 4-digit number for username and password
+                username = password = str(random.randint(1000, 9999))
+                log_event(f"Payment success for {phone}. Creating user {username} with profile {profile}")
+                create_mikrotik_user(username, password, profile, ip)
+                
+                # Store username and password in session to display to the user
+                session['username'] = username
+                session['password'] = password
+                session['ip'] = ip
+                session['mac'] = mac
+
+                # Remove the user's log entry from logs.txt
+                remove_user_log(mac)
+
+                return redirect(url_for('show_credentials'))
+            else:
+                log_event("User not found or missing IP in logs for payment success")
+                return jsonify({"error": "User not found or missing IP in logs"}), 400
+
+        log_event("Payment failed for phone " + str(phone))
+        return jsonify({"error": "Payment failed"}), 400
+    except Exception as e:
+        log_error(e)
+        return jsonify({"error": "Internal server error"}), 500
+
+@app.route('/show-credentials')
+def show_credentials():
+    username = session.get('username')
+    password = session.get('password')
+    ip = session.get('ip')
+    mac = session.get('mac')
+    if not username or not password:
+        return redirect(url_for('login'))
+
+    # Clear the session after displaying the credentials
+    session.pop('username', None)
+    session.pop('password', None)
+    session.pop('ip', None)
+    session.pop('mac', None)
+
+    return render_template('credentials.html', username=username, password=password, ip=ip, mac=mac)
+
+@app.route('/verifying-payment')
+def verifying_payment():
+    return render_template('verifying_payment.html')
+
 @app.route('/pay', methods=['POST'])
 def pay():
     try:
@@ -189,16 +259,40 @@ def pay():
         
         payment_result = payhero.stk_push(phone, package_amount)
         if payment_result:
-            return jsonify({"success": True, "message": "STK push sent! Enter your M-Pesa PIN."}), 200
+            return jsonify({"success": True, "message": "STK push sent! Enter your M-Pesa PIN.", "redirect_url": url_for('verifying_payment')}), 200
         else:
             return jsonify({"success": False, "message": "Payment processing failed."}), 500
     except Exception as e:
         log_error(e)
         return jsonify({"success": False, "message": "Internal server error"}), 500
 
-@app.route('/login-success.html')
-def block_login_success():
-    abort(404)
+def find_user_by_phone(phone):
+    try:
+        with open(LOG_FILE, "r") as file:
+            for line in file:
+                parts = line.strip().split(",")
+                if len(parts) >= 5:
+                    mac, ip, logged_phone, profile, expiry_date = parts[:5]
+                    if logged_phone == phone:
+                        return mac, ip, profile
+                else:
+                    log_event(f"Unexpected log entry format: {line.strip()}")
+        return None, None, None
+    except Exception as e:
+        log_error(e)
+        return None, None, None
+
+def remove_user_log(mac):
+    try:
+        with open(LOG_FILE, "r") as file:
+            lines = file.readlines()
+
+        with open(LOG_FILE, "w") as file:
+            for line in lines:
+                if mac not in line:
+                    file.write(line)
+    except Exception as e:
+        log_error(e)
 
 if __name__ == '__main__':
     # Start a background thread to remove expired users periodically
