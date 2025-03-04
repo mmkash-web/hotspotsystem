@@ -151,11 +151,7 @@ def login():
             file.write(log_entry)
         
         log_event(f"User logged: MAC {mac}, IP {ip}, Phone {phone}, Profile {profile}, Expiry Date {expiry_date}")
-        return redirect(url_for('login_success'))
-
-@app.route('/login_success')
-def login_success():
-    return render_template('login_success.html')
+        return "Login successful!"
 
 @app.route('/log-user', methods=['POST'])
 def log_user_request():
@@ -193,7 +189,7 @@ def pay():
         
         payment_result = payhero.stk_push(phone, package_amount)
         if payment_result:
-            return jsonify({"success": True, "message": "STK push sent! Enter your M-Pesa PIN.", "redirect_url": url_for('login_success')}), 200
+            return jsonify({"success": True, "message": "STK push sent! Enter your M-Pesa PIN."}), 200
         else:
             return jsonify({"success": False, "message": "Payment processing failed."}), 500
     except Exception as e:
