@@ -33,10 +33,10 @@
             margin-top: 20px;
         }
         .important-message {
-            font-size: 16px;
+            font-size: 16px; /* Smaller font size */
             color: #0073e6;
             text-align: center;
-            margin: 20px 0;
+            margin: 20px 0; /* Add some margin for spacing */
         }
         .card-container {
             display: grid;
@@ -138,14 +138,17 @@
     </style>
 </head>
 <body>
+
     <header>
         <h1>EMMKASH TECH</h1>
         <p>Contact us for support: +254112735877</p>
     </header>
+
     <div class="important-message">
         <p>Thanks for choosing us! Please choose your desired package and enter your phone number.</p>
     </div>
     <h2>GET CONNECTED NOW</h2>
+
     <div class="card-container">
         <div class="card" data-value="5" data-profile="2 HOURS">
             <h3>Ksh 5</h3>
@@ -172,21 +175,27 @@
             <p>1 MONTH</p>
         </div>
     </div>
+
     <div id="myModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <form id="paymentForm">
                 <input type="hidden" id="package" required>
                 <input type="hidden" id="profile" required>
+                
                 <label for="phone">Enter Mpesa Number:</label>
                 <input type="text" id="phone" name="phone" placeholder="07 OR 01" required>
+
                 <input type="hidden" id="macAddress" value="{{ mac }}">
                 <input type="hidden" id="ipAddress" value="{{ ip }}">
+
                 <button type="submit">Pay Now</button>
             </form>
         </div>
     </div>
+
     <p id="message"></p>
+
     <div class="quotes">
         <h3>Random Quotes</h3>
         <div class="quote-slide">"Technology is best when it brings people together." – Matt Mullenweg</div>
@@ -235,9 +244,11 @@
         <div class="quote-slide">"The human spirit must prevail over technology." – Albert Einstein</div>
         <div class="quote-slide">"The best way to predict the future is to invent it." – Alan Kay</div>
     </div>
+
     <footer>
         <p>&copy; 2025 Emmkash Tech. All rights reserved.</p>
     </footer>
+
     <script>
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', function() {
@@ -274,6 +285,9 @@
             setTimeout(showSlides, 5000); // Change slide every 5 seconds
         }
     </script>
+
+    <script src="/static/getMac.js"></script>
+    <script src="/static/login.js"></script>
+
 </body>
 </html>
-  
