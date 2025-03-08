@@ -12,10 +12,10 @@ app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Needed for session management
 CORS(app)  # Enable CORS for all routes
 
-ROUTER_IP = "139.162.60.189"  # Local IP after SSTP connection
-USERNAME = "9WQH1kOz"  # User created on MikroTik
-PASSWORD = "koOZsP0t"  # Password for the user
-PORT = 8728  # Default API port
+ROUTER_IP = "server3.remotemikrotik.com"  # Local IP after SSTP connection
+USERNAME = "admin" # User created on MikroTik
+PASSWORD = "A35QOGURSS"  # Password for the user
+PORT = 7026  # Default API port
 LOG_FILE = "user_logs.txt"
 
 def log_event(message):
@@ -320,3 +320,4 @@ if __name__ == '__main__':
     # Start a background thread to remove expired users periodically
     threading.Thread(target=schedule_user_removal, daemon=True).start()
     app.run(host='0.0.0.0', port=5000, debug=True)
+
