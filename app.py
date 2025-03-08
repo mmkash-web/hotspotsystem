@@ -17,6 +17,7 @@ USERNAME = "admin"  # User created on MikroTik
 PASSWORD = "A35QOGURSS"  # Password for the user
 PORT = 7026  # Default API port
 LOG_FILE = "user_logs.txt"
+UPTIME_LIMIT = 3600  # Uptime limit in seconds (e.g., 3600 seconds for 1 hour)
 
 def log_event(message):
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -58,6 +59,13 @@ def create_mikrotik_user(username, password, profile, ip):
         active_users.call('login', {'user': username, 'password': password, 'ip': ip})
         log_event(f"User {username} logged in automatically from IP {ip}")
 
+        # Log user creation time and expiry
+        creation_time = datetime.datetime.now()
+        expiry_time = creation_time + datetime.timedelta(seconds=UPTIME_LIMIT)
+        log_entry = f"{username},{ip},{profile},{creation_time},{expiry_time}\n"
+        with open(LOG_FILE, "a") as log_file:
+            log_file.write(log_entry)
+
         return True
     except routeros_api.exceptions.RouterOsApiCommunicationError as e:
         log_event(f"Failed to add user {username} with profile {profile} to MikroTik")
@@ -76,12 +84,12 @@ def remove_expired_users():
             for line in lines:
                 parts = line.strip().split(",")
                 if len(parts) >= 5:
-                    mac, ip, phone, profile, expiry_date = parts[:5]
-                    expiry_date = datetime.datetime.strptime(expiry_date, "%Y-%m-%d %H:%M:%S")
-                    if current_time > expiry_date:
-                        logout_mikrotik_user(mac)
-                        remove_mikrotik_user(mac)
-                        log_event(f"Removed expired user: MAC {mac}")
+                    username, ip, profile, creation_time, expiry_time = parts[:5]
+                    expiry_time = datetime.datetime.strptime(expiry_time, "%Y-%m-%d %H:%M:%S")
+                    if current_time > expiry_time:
+                        logout_mikrotik_user(username)
+                        remove_mikrotik_user(username)
+                        log_event(f"Removed expired user: Username {username}")
                     else:
                         file.write(line)
                 else:
@@ -320,4 +328,3 @@ if __name__ == '__main__':
     # Start a background thread to remove expired users periodically
     threading.Thread(target=schedule_user_removal, daemon=True).start()
     app.run(host='0.0.0.0', port=5000, debug=True)
-
