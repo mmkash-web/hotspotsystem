@@ -12,7 +12,7 @@ app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Needed for session management
 CORS(app)  # Enable CORS for all routes
 
-ROUTER_IP = "192.168.88.1"  # Local IP after SSTP connection
+ROUTER_IP = "server3.remotemikrotik.com"  # Local IP after SSTP connection
 USERNAME = "9WQH1kOz"  # User created on MikroTik
 PASSWORD = "koOZsP0t"  # Password for the user
 PORT = 8728  # Default API port
