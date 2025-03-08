@@ -11,15 +11,18 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #e3f2fd;
+            background-color:rgb(22, 110, 172);
             font-family: Arial, sans-serif;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
         .loader-container {
             background: white;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            z-index: 2;
         }
         .loader {
             width: 50px;
@@ -37,35 +40,160 @@
         .progress-text {
             font-size: 18px;
             margin-top: 10px;
-            color: #1565c0;
+            color: #43a047; /* Green color */
         }
         h2 {
             color: #0d47a1;
         }
+        /* Add a container for particles.js */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            background-color: rgb(22, 110, 172);
+        }
     </style>
+    <!-- Include local copy of particles.js -->
+    <script src="../static/particles.min.js"></script>
 </head>
 <body>
+    <!-- Particles.js container -->
+    <div id="particles-js"></div>
+    
     <div class="loader-container">
         <h2>Connecting to WiFi...</h2>
         <div class="loader"></div>
-        <p class="progress-text" id="statusText">Verifying Payment...</p>
+        <p class="progress-text" id="statusText">Waiting for Payment...</p>
     </div>
 
     <script>
         let statusText = document.getElementById("statusText");
-        let steps = ["Verifying Payment...", "Processing Request...", "Finalizing Connection...", "Connected! Redirecting..."];
+        let steps = ["Waiting for Payment...", "Verifying Payment...", "Connecting to Internet..."];
         let stepIndex = 0;
 
         function updateStatus() {
             if (stepIndex < steps.length) {
                 statusText.innerText = steps[stepIndex];
                 stepIndex++;
-                setTimeout(updateStatus, 2000);
-            } else {
-                window.location.href = "http://emmkashtech.online"; // Change to your WiFi landing page
+                setTimeout(updateStatus, 5000); // Wait for 5 seconds before updating to the next step
             }
         }
-        setTimeout(updateStatus, 2000);
+        setTimeout(updateStatus, 5000);
+
+        // Initialize particles.js
+        particlesJS('particles-js', {
+          "particles": {
+            "number": {
+              "value": 80,
+              "density": {
+                "enable": true,
+                "value_area": 800
+              }
+            },
+            "color": {
+              "value": "#ffffff"
+            },
+            "shape": {
+              "type": "circle",
+              "stroke": {
+                "width": 0,
+                "color": "#000000"
+              },
+              "polygon": {
+                "nb_sides": 5
+              },
+              "image": {
+                "src": "img/github.svg",
+                "width": 100,
+                "height": 100
+              }
+            },
+            "opacity": {
+              "value": 0.5,
+              "random": false,
+              "anim": {
+                "enable": false,
+                "speed": 1,
+                "opacity_min": 0.1,
+                "sync": false
+              }
+            },
+            "size": {
+              "value": 3,
+              "random": true,
+              "anim": {
+                "enable": false,
+                "speed": 40,
+                "size_min": 0.1,
+                "sync": false
+              }
+            },
+            "line_linked": {
+              "enable": true,
+              "distance": 150,
+              "color": "#ffffff",
+              "opacity": 0.4,
+              "width": 1
+            },
+            "move": {
+              "enable": true,
+              "speed": 6,
+              "direction": "none",
+              "random": false,
+              "straight": false,
+              "out_mode": "out",
+              "bounce": false,
+              "attract": {
+                "enable": false,
+                "rotateX": 600,
+                "rotateY": 1200
+              }
+            }
+          },
+          "interactivity": {
+            "detect_on": "canvas",
+            "events": {
+              "onhover": {
+                "enable": true,
+                "mode": "repulse"
+              },
+              "onclick": {
+                "enable": true,
+                "mode": "push"
+              },
+              "resize": true
+            },
+            "modes": {
+              "grab": {
+                "distance": 400,
+                "line_linked": {
+                  "opacity": 1
+                }
+              },
+              "bubble": {
+                "distance": 400,
+                "size": 40,
+                "duration": 2,
+                "opacity": 8,
+                "speed": 3
+              },
+              "repulse": {
+                "distance": 200,
+                "duration": 0.4
+              },
+              "push": {
+                "particles_nb": 4
+              },
+              "remove": {
+                "particles_nb": 2
+              }
+            }
+          },
+          "retina_detect": true
+        });
     </script>
 </body>
 </html>

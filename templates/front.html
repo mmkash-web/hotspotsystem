@@ -4,45 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Buy Data & Connect - EMMKASH TECH</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f8ff;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f9;
             margin: 0;
             padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
-            overflow-x: hidden; /* Prevent horizontal scrolling */
+            overflow-x: hidden;
         }
         header {
             width: 100%;
             background-color: #0073e6;
             color: white;
-            padding: 10px 0;
-            text-align: center;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        header h1 {
+        .header-left {
+            text-align: left;
+            padding-left: 20px;
+        }
+        .header-left h1 {
             margin: 0;
+            font-size: 1.5rem;
         }
-        header p {
-            margin: 5px 0 0;
+        .support-number {
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+        .support-number i {
+            margin-right: 5px;
+        }
+        .header-right {
+            font-size: 24px;
+            color: white;
+            padding-right: 20px;
         }
         h2 {
             color: #333;
-            margin-top: 20px;
+            margin: 40px 0 20px;
+            font-size: 1.5rem;
         }
         .important-message {
-            font-size: 16px; /* Smaller font size */
+            font-size: 1rem;
             color: #0073e6;
             text-align: center;
-            margin: 20px 0; /* Add some margin for spacing */
+            margin: 20px 0;
         }
         .card-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
             margin-top: 20px;
+            width: 90%;
+            max-width: 1200px;
         }
         .card {
             background-color: #ffffff;
@@ -52,62 +75,70 @@
             padding: 20px;
             text-align: center;
             cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
         .card h3 {
             margin: 0;
             color: #0073e6;
-            font-size: 24px;
+            font-size: 1.5rem;
         }
         .card p {
-            margin: 5px 0;
+            margin: 10px 0 0;
             color: #555;
+            font-size: 1rem;
         }
         .modal {
             display: none;
             position: fixed;
-            z-index: 1;
+            z-index: 1000;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
-            background-color: rgba(0, 0, 0, 0.4);
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
         }
         .modal-content {
             background-color: #fefefe;
-            margin: 15% auto;
             padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 400px;
             border-radius: 10px;
             text-align: center;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
         }
         .close {
             color: #aaa;
-            float: right;
+            position: absolute;
+            top: 10px;
+            right: 20px;
             font-size: 28px;
             font-weight: bold;
+            cursor: pointer;
         }
         .close:hover,
         .close:focus {
             color: black;
-            text-decoration: none;
-            cursor: pointer;
         }
         label, input, button {
             display: block;
             width: 100%;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         input, button {
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
+            font-size: 1rem;
         }
         button {
             background-color: #0073e6;
-            color: #fff;
+            color: white;
             cursor: pointer;
         }
         button:hover {
@@ -124,8 +155,10 @@
         .quote-slide {
             display: none;
             font-style: italic;
-            font-family: 'Georgia', serif;
             color: #333;
+        }
+        .quote-slide.active {
+            display: block;
         }
         footer {
             margin-top: 40px;
@@ -135,13 +168,114 @@
             color: white;
             text-align: center;
         }
+        .login-container {
+            width: 100%;
+            max-width: 300px;
+            margin: 20px auto;
+            padding: 15px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .login-container input[type="text"],
+        .login-container input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .login-container input[type="submit"] {
+            width: 100%;
+            padding: 8px;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            position: relative;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .login-container input[type="submit"]::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #00ff00, #00ff00, #00ff00, #00ff00);
+            z-index: -1;
+            filter: blur(8px);
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+            animation: neon-rotate 2s linear infinite;
+        }
+        @keyframes neon-rotate {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        .login-container input[type="submit"]:hover::before {
+            opacity: 1;
+        }
+        .container {
+            width: 90%;
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .container h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .input-box {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .surf-btn {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .surf-btn:hover {
+            opacity: 0.9;
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>EMMKASH TECH</h1>
-        <p>Contact us for support: +254112735877</p>
+        <div class="header-left">
+            <h1>EMMKASH TECH</h1>
+            <div class="support-number">
+                <i class="fas fa-headset"></i>
+               Care:+254112735877
+            </div>
+        </div>
+        <div class="header-right">
+            <i class="fas fa-wifi"></i>
+        </div>
     </header>
 
     <div class="important-message">
@@ -194,11 +328,27 @@
         </div>
     </div>
 
-    <p id="message"></p>
+    <div class="container">
+        <h3>Quick Connect (Login)</h3>
+        <input type="text" class="input-box" placeholder="Username">
+        <button class="surf-btn">Surf Now</button>
+    </div>
+
+    <div class="container">
+        <h3>Quick Re-Connect</h3>
+        <input type="text" class="input-box" placeholder="M-Pesa Code e.g. QZH9QWWZRR">
+        <button class="surf-btn" style="background: linear-gradient(to right, #ff9900, #ff6600);">Surf Now</button>
+    </div>
+
+    <div class="container">
+        <h3>Redeem Voucher</h3>
+        <input type="text" class="input-box" placeholder="Enter Voucher Code">
+        <button class="surf-btn" style="background: linear-gradient(to right, #11998e, #38ef7d);">Activate & Surf</button>
+    </div>
 
     <div class="quotes">
         <h3>Random Quotes</h3>
-        <div class="quote-slide">"Technology is best when it brings people together." – Matt Mullenweg</div>
+        <div class="quote-slide active">"Technology is best when it brings people together." – Matt Mullenweg</div>
         <div class="quote-slide">"It's not that we use technology, we live technology." – Godfrey Reggio</div>
         <div class="quote-slide">"The real problem is not whether machines think but whether men do." – B.F. Skinner</div>
         <div class="quote-slide">"Technology is a useful servant but a dangerous master." – Christian Lous Lange</div>
@@ -221,7 +371,7 @@
         <div class="quote-slide">"Technology made large populations possible; large populations now make technology indispensable." – Joseph Krutch</div>
         <div class="quote-slide">"The art of life is a constant readjustment to our surroundings." – Kakuzo Okakura</div>
         <div class="quote-slide">"The real danger is not that computers will begin to think like men, but that men will begin to think like computers." – Sydney J. Harris</div>
-        <div class="quote-slide">"Any sufficiently advanced technology is equivalent to magic." – Arthur C. Clarke</div>
+        <div class="quote-slide">"Any sufficiently advanced technology is indistinguishable from magic." – Arthur C. Clarke</div>
         <div class="quote-slide">"The great growling engine of change – technology." – Alvin Toffler</div>
         <div class="quote-slide">"First we thought the PC was a calculator. Then we found out how to turn numbers into letters with ASCII – and we thought it was a typewriter. Then we discovered graphics, and we thought it was a television. With the World Wide Web, we’ve realized it’s a brochure." – Douglas Adams</div>
         <div class="quote-slide">"The most important thing in the world is not the technology but the dream." – Mark Zuckerberg</div>
@@ -242,12 +392,13 @@
         <div class="quote-slide">"The great myth of our times is that technology is communication." – Libby Larsen</div>
         <div class="quote-slide">"Any sufficiently advanced technology is indistinguishable from magic." – Arthur C. Clarke</div>
         <div class="quote-slide">"The human spirit must prevail over technology." – Albert Einstein</div>
-        <div class="quote-slide">"The best way to predict the future is to invent it." – Alan Kay</div>
+        <div class="quote-slide">"The best way to predict the future is
     </div>
 
     <footer>
-        <p>&copy; 2025 Emmkash Tech. All rights reserved.</p>
-    </footer>
+        <footer style="position: fixed; bottom: 0; left: 0; width: 100%; background: #0073e6; color: white; text-align: center; padding: 10px; font-size: 14px;">
+            <p>&copy; 2025 Emmkash Tech. All rights reserved.</p>
+        </footer>   
 
     <script>
         document.querySelectorAll('.card').forEach(card => {
