@@ -10,7 +10,7 @@ async function getUserIP() {
 
 async function fetchMacAddress() {
     let ip = await getUserIP();
-    let response = await fetch("http://6691-154-159-252-52.ngrok-free.app/map-mac", {
+    let response = await fetch("http://wifisystem-31d864ee2fd6.herokuapp.com/map-mac", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ip: ip })
