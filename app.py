@@ -324,11 +324,12 @@ def admin():
         with open(LOG_FILE, "r") as file:
             for line in file:
                 parts = line.strip().split(",")
-                if len(parts) >= 4:
-                    username, ip, profile, expiry_date = parts[:4]
+                if len(parts) >= 5:
+                    username, ip, phone, profile, expiry_date = parts[:5]
                     users.append({
                         "username": username,
                         "ip": ip,
+                        "phone": phone,
                         "profile": profile,
                         "expiry_date": expiry_date
                     })
