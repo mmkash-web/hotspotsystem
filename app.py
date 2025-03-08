@@ -8,6 +8,7 @@ import random
 import threading
 import time
 import os
+import re
 import payhero  # Ensure this import is added
 
 app = Flask(__name__)
@@ -18,7 +19,7 @@ ROUTER_IP = 'server3.remotemikrotik.com'
 USERNAME = 'admin'
 PASSWORD = 'A35QOGURSS'
 PORT = 7026
-UPTIME_LIMIT = 3600  # Uptime limit in seconds (e.g., 3600 seconds for 1 hour)
+UPTIME_LIMIT = 7200  # Uptime limit in seconds (e.g., 7200 seconds for 2 hours)
 LOG_FILE = 'user_logs.txt'  # Log file path
 PAYMENT_LOG_FILE = 'payment_logs.txt'  # Payment log file path
 
@@ -323,17 +324,19 @@ def admin():
     try:
         with open(LOG_FILE, "r") as file:
             for line in file:
-                if "Payment callback received" in line or "Callback Data" in line:
+                if "Payment success" not in line:
                     continue
-                parts = line.strip().split(",")
-                if len(parts) >= 5:
-                    username, ip, phone, profile, expiry_date = parts[:5]
+                match = re.search(r'Payment success for (\d+). Creating user (\d+) with profile (\S+)', line)
+                if match:
+                    phone, username, profile = match.groups()
+                    ip = 'Unknown IP'  # Default value if IP is not found
+                    expiry_date = datetime.datetime.now(KENYA_TZ) + datetime.timedelta(seconds=UPTIME_LIMIT)
                     users.append({
                         "username": username,
                         "ip": ip,
                         "phone": phone,
                         "profile": profile,
-                        "expiry_date": expiry_date
+                        "expiry_date": expiry_date.strftime("%Y-%m-%d %H:%M:%S")
                     })
         with open(PAYMENT_LOG_FILE, "r") as file:
             for line in file:
