@@ -323,6 +323,8 @@ def admin():
     try:
         with open(LOG_FILE, "r") as file:
             for line in file:
+                if "Payment callback received" in line or "Callback Data" in line:
+                    continue
                 parts = line.strip().split(",")
                 if len(parts) >= 5:
                     username, ip, phone, profile, expiry_date = parts[:5]
