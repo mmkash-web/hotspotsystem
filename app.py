@@ -18,6 +18,7 @@ PASSWORD = 'A35QOGURSS'
 PORT = 7026
 UPTIME_LIMIT = 3600  # Uptime limit in seconds (e.g., 3600 seconds for 1 hour)
 LOG_FILE = 'user_logs.txt'  # Log file path
+PAYMENT_LOG_FILE = 'payment_logs.txt'  # Payment log file path
 
 def log_event(message):
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -25,6 +26,12 @@ def log_event(message):
     print(log_entry)
     with open(LOG_FILE, "a") as log_file:
         log_file.write(log_entry + "\n")
+
+def log_payment(phone, amount):
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_entry = f"[{timestamp}] {phone},{amount}\n"
+    with open(PAYMENT_LOG_FILE, "a") as log_file:
+        log_file.write(log_entry)
 
 def log_error(e):
     error_message = f"Error: {str(e)}\n{traceback.format_exc()}"
@@ -62,7 +69,7 @@ def create_mikrotik_user(username, password, profile, ip):
         # Log user creation time and expiry
         creation_time = datetime.datetime.now()
         expiry_time = creation_time + datetime.timedelta(seconds=UPTIME_LIMIT)
-        log_entry = f"{username},{ip},{profile},{creation_time},{expiry_time}\n"
+        log_entry = f"{username},{ip},{phone},{profile},{expiry_time}\n"
         with open(LOG_FILE, "a") as log_file:
             log_file.write(log_entry)
 
@@ -221,8 +228,9 @@ def payment_callback():
         response_data = data.get("response", {})
         phone = response_data.get("Phone")
         status = response_data.get("Status")
+        amount = response_data.get("Amount")
 
-        log_event(f"Payment callback received: Phone {phone}, Status {status}")
+        log_event(f"Payment callback received: Phone {phone}, Status {status}, Amount {amount}")
         log_event(f"Callback Data: {data}")
 
         if status == "Success":
@@ -241,6 +249,9 @@ def payment_callback():
                 session['password'] = password
                 session['ip'] = ip
                 session['mac'] = mac
+
+                # Log payment
+                log_payment(phone, amount)
 
                 # Remove the user's log entry from logs.txt
                 remove_user_log(mac)
@@ -299,6 +310,8 @@ def pay():
 @app.route('/admin')
 def admin():
     users = []
+    total_amount_today = 0
+    current_date = datetime.datetime.now().strftime("%Y-%m-%d")
     try:
         with open(LOG_FILE, "r") as file:
             for line in file:
@@ -312,9 +325,16 @@ def admin():
                         "profile": profile,
                         "expiry_date": expiry_date
                     })
+        with open(PAYMENT_LOG_FILE, "r") as file:
+            for line in file:
+                parts = line.strip().split(",")
+                if len(parts) == 2:
+                    timestamp, amount = parts
+                    if timestamp.startswith(current_date):
+                        total_amount_today += float(amount)
     except Exception as e:
         log_error(e)
-    return render_template('admin.html', users=users)
+    return render_template('admin.html', users=users, total_amount_today=total_amount_today)
 
 def find_user_by_phone(phone):
     try:
