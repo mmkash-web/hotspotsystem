@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template, redirect, url_for, s
 from flask_cors import CORS
 import routeros_api
 import datetime
+import pytz
 import traceback
 import random
 import threading
@@ -20,15 +21,17 @@ UPTIME_LIMIT = 3600  # Uptime limit in seconds (e.g., 3600 seconds for 1 hour)
 LOG_FILE = 'user_logs.txt'  # Log file path
 PAYMENT_LOG_FILE = 'payment_logs.txt'  # Payment log file path
 
+KENYA_TZ = pytz.timezone('Africa/Nairobi')
+
 def log_event(message):
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = datetime.datetime.now(KENYA_TZ).strftime("%Y-%m-%d %H:%M:%S")
     log_entry = f"[{timestamp}] {message}"
     print(log_entry)
     with open(LOG_FILE, "a") as log_file:
         log_file.write(log_entry + "\n")
 
 def log_payment(phone, amount):
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    timestamp = datetime.datetime.now(KENYA_TZ).strftime("%Y-%m-%d %H:%M:%S")
     log_entry = f"[{timestamp}] {phone},{amount}\n"
     with open(PAYMENT_LOG_FILE, "a") as log_file:
         log_file.write(log_entry)
@@ -67,9 +70,9 @@ def create_mikrotik_user(username, password, profile, ip):
         log_event(f"User {username} logged in automatically from IP {ip}")
 
         # Log user creation time and expiry
-        creation_time = datetime.datetime.now()
+        creation_time = datetime.datetime.now(KENYA_TZ)
         expiry_time = creation_time + datetime.timedelta(seconds=UPTIME_LIMIT)
-        log_entry = f"{username},{ip},{phone},{profile},{expiry_time}\n"
+        log_entry = f"{username},{ip},{profile},{expiry_time}\n"
         with open(LOG_FILE, "a") as log_file:
             log_file.write(log_entry)
 
@@ -83,15 +86,15 @@ def create_mikrotik_user(username, password, profile, ip):
 
 def remove_expired_users():
     try:
-        current_time = datetime.datetime.now()
+        current_time = datetime.datetime.now(KENYA_TZ)
         with open(LOG_FILE, "r") as file:
             lines = file.readlines()
         
         with open(LOG_FILE, "w") as file:
             for line in lines:
                 parts = line.strip().split(",")
-                if len(parts) >= 5:
-                    username, ip, profile, creation_time, expiry_time = parts[:5]
+                if len(parts) >= 4:
+                    username, ip, profile, expiry_time = parts[:4]
                     expiry_time = datetime.datetime.strptime(expiry_time, "%Y-%m-%d %H:%M:%S")
                     if current_time > expiry_time:
                         logout_mikrotik_user(username)
@@ -182,7 +185,7 @@ def login():
         if not mac or mac == "Unknown MAC":
             return "Error: MAC Address Not Found!", 400
 
-        expiry_date = (datetime.datetime.now() + datetime.timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
+        expiry_date = (datetime.datetime.now(KENYA_TZ) + datetime.timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")
         log_entry = f"{mac},{ip},{phone},{profile},{expiry_date}\n"
         with open(LOG_FILE, "a") as file:
             file.write(log_entry)
@@ -202,7 +205,7 @@ def log_user_request():
         ip = data.get("ip")
         phone = data.get("phone")
         profile = data.get("profile")
-        expiry_date = (datetime.datetime.now() + datetime.timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")  # User expires in 30 days
+        expiry_date = (datetime.datetime.now(KENYA_TZ) + datetime.timedelta(days=30)).strftime("%Y-%m-%d %H:%M:%S")  # User expires in 30 days
 
         if not mac or not phone:
             log_event("Error: MAC and phone number are required")
@@ -311,17 +314,16 @@ def pay():
 def admin():
     users = []
     total_amount_today = 0
-    current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+    current_date = datetime.datetime.now(KENYA_TZ).strftime("%Y-%m-%d")
     try:
         with open(LOG_FILE, "r") as file:
             for line in file:
                 parts = line.strip().split(",")
-                if len(parts) >= 5:
-                    username, ip, phone, profile, expiry_date = parts[:5]
+                if len(parts) >= 4:
+                    username, ip, profile, expiry_date = parts[:4]
                     users.append({
                         "username": username,
                         "ip": ip,
-                        "phone": phone,
                         "profile": profile,
                         "expiry_date": expiry_date
                     })
