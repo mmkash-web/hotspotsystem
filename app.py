@@ -7,6 +7,7 @@ import traceback
 import random
 import threading
 import time
+import os
 import payhero  # Ensure this import is added
 
 app = Flask(__name__)
@@ -22,6 +23,10 @@ LOG_FILE = 'user_logs.txt'  # Log file path
 PAYMENT_LOG_FILE = 'payment_logs.txt'  # Payment log file path
 
 KENYA_TZ = pytz.timezone('Africa/Nairobi')
+
+# Ensure log files exist
+open(LOG_FILE, 'a').close()
+open(PAYMENT_LOG_FILE, 'a').close()
 
 def log_event(message):
     timestamp = datetime.datetime.now(KENYA_TZ).strftime("%Y-%m-%d %H:%M:%S")
