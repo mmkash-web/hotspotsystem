@@ -44,8 +44,8 @@ document.getElementById("paymentForm").addEventListener("submit", async function
         }
 
         if (result.success) {
-            // Display a success message
-            document.getElementById("message").innerText = "Payment successful! You are now logged in.";
+            // Redirect to the verifying_payment page
+            window.location.href = result.redirect_url;
         } else {
             document.getElementById("message").innerText = "Payment failed! " + (result.message || "Try again.");
         }
