@@ -6,23 +6,25 @@ import traceback
 import random
 import threading
 import time
+import os
 import payhero  # Ensure this import is added
 
 app = Flask(__name__)
-app.secret_key = 'supersecretkey'  # Needed for session management
+app.secret_key = os.environ.get('SECRET_KEY', 'supersecretkey')  # Needed for session management
 CORS(app)  # Enable CORS for all routes
 
-ROUTER_IP = "server3.remotemikrotik.com"  # Local IP after SSTP connection
-USERNAME = "admin"  # User created on MikroTik
-PASSWORD = "A35QOGURSS"  # Password for the user
-PORT = 7026  # Default API port
-LOG_FILE = "user_logs.txt"
-UPTIME_LIMIT = 3600  # Uptime limit in seconds (e.g., 3600 seconds for 1 hour)
+ROUTER_IP = os.environ.get('ROUTER_IP', 'server3.remotemikrotik.com')
+USERNAME = os.environ.get('USERNAME', 'admin')
+PASSWORD = os.environ.get('PASSWORD', 'A35QOGURSS')
+PORT = int(os.environ.get('PORT', 7026))
+UPTIME_LIMIT = int(os.environ.get('UPTIME_LIMIT', 3600))  # Uptime limit in seconds (e.g., 3600 seconds for 1 hour)
+LOG_FILE = os.environ.get('LOG_FILE', 'user_logs.txt')  # Log file path
 
 def log_event(message):
     timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     log_entry = f"[{timestamp}] {message}"
     print(log_entry)
+    # Consider using an external logging service for persistent logs
     with open(LOG_FILE, "a") as log_file:
         log_file.write(log_entry + "\n")
 
@@ -296,6 +298,26 @@ def pay():
         log_error(e)
         return jsonify({"success": False, "message": "Internal server error"}), 500
 
+@app.route('/admin')
+def admin():
+    users = []
+    try:
+        with open(LOG_FILE, "r") as file:
+            for line in file:
+                parts = line.strip().split(",")
+                if len(parts) >= 5:
+                    username, ip, phone, profile, expiry_date = parts[:5]
+                    users.append({
+                        "username": username,
+                        "ip": ip,
+                        "phone": phone,
+                        "profile": profile,
+                        "expiry_date": expiry_date
+                    })
+    except Exception as e:
+        log_error(e)
+    return render_template('admin.html', users=users)
+
 def find_user_by_phone(phone):
     try:
         with open(LOG_FILE, "r") as file:
@@ -327,4 +349,4 @@ def remove_user_log(mac):
 if __name__ == '__main__':
     # Start a background thread to remove expired users periodically
     threading.Thread(target=schedule_user_removal, daemon=True).start()
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=True)
