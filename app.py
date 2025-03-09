@@ -19,7 +19,7 @@ ROUTER_IP = 'server3.remotemikrotik.com'
 USERNAME = 'admin'
 PASSWORD = 'A35QOGURSS'
 PORT = 7026
-UPTIME_LIMIT = 7200  # Uptime limit in seconds (e.g., 7200 seconds for 2 hours)
+PACKAGE_DURATION = 7200  # Package duration in seconds (e.g., 7200 seconds for 2 hours)
 LOG_FILE = 'user_logs.txt'  # Log file path
 PAYMENT_LOG_FILE = 'payment_logs.txt'  # Payment log file path
 
@@ -67,18 +67,21 @@ def create_mikrotik_user(username, password, profile, ip):
         hotspot_users = router.get_resource('/ip/hotspot/user')
         active_users = router.get_resource('/ip/hotspot/active')
 
-        # Add user to MikroTik hotspot
-        hotspot_users.add(name=username, password=password, profile=profile)
-        log_event(f"User added to MikroTik: Username {username}, Profile {profile}")
+        # Calculate expiration timestamp
+        creation_time = datetime.datetime.now(KENYA_TZ)
+        expiry_time = creation_time + datetime.timedelta(seconds=PACKAGE_DURATION)
+        expiry_str = expiry_time.strftime("%Y-%m-%d %H:%M:%S")
+
+        # Add user to MikroTik hotspot with expiration comment
+        hotspot_users.add(name=username, password=password, profile=profile, comment=f"expires:{expiry_str}")
+        log_event(f"User added to MikroTik: Username {username}, Profile {profile}, Expires {expiry_str}")
 
         # Force user to log in
         active_users.call('login', {'user': username, 'password': password, 'ip': ip})
         log_event(f"User {username} logged in automatically from IP {ip}")
 
         # Log user creation time and expiry
-        creation_time = datetime.datetime.now(KENYA_TZ)
-        expiry_time = creation_time + datetime.timedelta(seconds=UPTIME_LIMIT)
-        log_entry = f"{username},{ip},{profile},{expiry_time}\n"
+        log_entry = f"{username},{ip},{profile},{expiry_str}\n"
         with open(LOG_FILE, "a") as log_file:
             log_file.write(log_entry)
 
@@ -100,8 +103,8 @@ def remove_expired_users():
             for line in lines:
                 parts = line.strip().split(",")
                 if len(parts) >= 4:
-                    username, ip, profile, expiry_time = parts[:4]
-                    expiry_time = datetime.datetime.strptime(expiry_time, "%Y-%m-%d %H:%M:%S")
+                    username, ip, profile, expiry_time_str = parts[:4]
+                    expiry_time = datetime.datetime.strptime(expiry_time_str, "%Y-%m-%d %H:%M:%S")
                     if current_time > expiry_time:
                         logout_mikrotik_user(username)
                         remove_mikrotik_user(username)
@@ -330,7 +333,7 @@ def admin():
                 if match:
                     phone, username, profile = match.groups()
                     ip = 'Unknown IP'  # Default value if IP is not found
-                    expiry_date = datetime.datetime.now(KENYA_TZ) + datetime.timedelta(seconds=UPTIME_LIMIT)
+                    expiry_date = datetime.datetime.now(KENYA_TZ) + datetime.timedelta(seconds=PACKAGE_DURATION)
                     users.append({
                         "username": username,
                         "ip": ip,
